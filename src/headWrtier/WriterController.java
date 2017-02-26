@@ -1,26 +1,36 @@
 package headWrtier;
+/**
+ * ===================================================================================================================
+ * File: Header Writer
+ * Made by: Toby Zhang on Feb. 25, 2017
+ * <p>
+ * Purpose: Reads a given BSQ file, takes user input for sizes, outputs a new file with the header written
+ * Dependencies: none noted.
+ * <p>
+ * Limitations: input must be a valid BSQ image file, must know exact details of sizes.
+ * ====================================================================================================================
+ */
+
+//imports
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 import java.io.*;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.ResourceBundle;
 
 public class WriterController implements Initializable {
 
+    //FX GUI hooks
     @FXML
     Pane pane;
-
     @FXML
     TextField tfPath;
     @FXML
@@ -32,122 +42,146 @@ public class WriterController implements Initializable {
     @FXML
     Text txtWarning;
 
-    @FXML
-
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-
-
-    }
-
-
+    //sets default file paths
     //At school
     //File homedir = new File("H:/var/gist/8100/mod1/");
     //At local
-    File homedir = new File("D:\\Projects");
+    File homedir = new File("D:\\Projects\\mod3\\mod3");
 
+    //On program start (sets default testing location and values)
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        try {
+            tfPath.setText("D:\\Projects\\mod3\\mod3\\mod3data.img");
+            tfRecLength.setText("512");
+            tfHeadLength.setText("8");
+            tfBandSize.setText("512");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public void OpenFile() {
-        //opens up the file chooser window
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open img file");
-        fileChooser.setInitialDirectory(homedir);
-        File input = fileChooser.showOpenDialog(pane.getScene().getWindow());
-        //wipes input and output text space
-        tfBandSize.setText("");
-        tfRecLength.setText("");
-        tfHeadLength.setText("");
-        //if invalid file selected
-        if (input != null) {
-            tfPath.setText(String.valueOf(input));
-        } else {
-            tfPath.setText("Invalid File Selected");
+        try {
+            //opens up the file chooser window
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open img file");
+            fileChooser.setInitialDirectory(homedir);
+            File input = fileChooser.showOpenDialog(pane.getScene().getWindow());
+            //if invalid file selected, warning message appears
+            if (input != null) {
+                tfPath.setText(String.valueOf(input));
+                txtWarning.setVisible(false);
+            } else {
+                tfPath.setText("Invalid File Selected");
+                txtWarning.setVisible(true);
+                txtWarning.setText("WARNING: FILE NOT FOUND");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     public void WriteFile() throws IOException {
 
+        try {
+            //Save output file directory choose
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save file");
+            fileChooser.setInitialDirectory(homedir);
+            File outputPath = fileChooser.showSaveDialog(pane.getScene().getWindow());
 
-        //Save output file directory
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save file");
-        fileChooser.setInitialDirectory(homedir);
-        File outputPath = fileChooser.showSaveDialog(pane.getScene().getWindow());
+            //sets variable values from input
+            File inputFile = new File(tfPath.getText());
+            int recordLength = Integer.parseInt(tfRecLength.getText());
+            int headerSize = Integer.parseInt(tfHeadLength.getText());
+            int bandSize = Integer.parseInt(tfBandSize.getText());
 
+            //default header values information
+            int sun_magic = 0x59a66a95;    //magic number
+            int sun_rows = recordLength;          //num of rows in image
+            int sun_cols = headerSize + bandSize;          //num of cols in image
+            int sun_depth = 8;    //pixelbits(1,8 or 24
+            int sun_length = sun_rows * sun_cols;//length of data
+            int sun_type = 0;              //type of file
+            int sun_maptype = 0;       //type of colormap
+            int sun_maplength = 0;   //colourmap length bytes)
+            //saves all values as array
+            int[] sun_values = new int[]{sun_magic, sun_rows, sun_cols, sun_depth, sun_length, sun_type, sun_maptype, sun_maplength};
 
-        //sets variable values
-        File inputFile = new File(tfPath.getText());
-        int recordLength = Integer.parseInt(tfRecLength.getText());
-        int headerSize = Integer.parseInt(tfHeadLength.getText());
-        int bandSize = Integer.parseInt(tfBandSize.getText());
+            //a list of arrays (2d structure)
+            ArrayList<byte[]> headerColumn = new ArrayList<byte[]>();
+            //array to store into the list
+            byte[] headerColumnArray = new byte[recordLength];
+            //starts datainput stream
+            DataInputStream d_is = new DataInputStream(new FileInputStream(inputFile));
 
-        //header values information
-        int sun_magic = 0x59a66a95;    //magic number
-        int sun_rows = recordLength;          //num of rows in image
-        int sun_cols = headerSize + bandSize;          //num of cols in image
-        int sun_depth = 8;    //pixelbits(1,8 or 24
-        int sun_length = sun_rows * sun_cols;//length of data
-        int sun_type = 0;              //type of file
-        int sun_maptype = 0;       //type of colormap
-        int sun_maplength = 0;   //colourmap length bytes)
-        int[] sun_values = new int[]{sun_magic, sun_rows, sun_cols, sun_depth, sun_length, sun_type, sun_maptype, sun_maplength};
-
-        int headerNumber = 0;
-        ArrayList<byte[]> headerColumn = new ArrayList<byte[]>();
-
-
-        DataInputStream d_is = new DataInputStream(new FileInputStream(inputFile));
-
-        byte[] headerColumnArray = new byte[recordLength];
-
-        while (d_is.available() > 0) {
-            //fills entire header to array
-
-
-            //System.out.print("C"+headerColumn.size()+"\n");
-            for (int i = 0; i < headerSize; i++) {
-                d_is.read(headerColumnArray);
-                headerColumn.add(headerColumnArray);
-                // System.out.print("A"+headerColumn.size()+"\n");
-                headerColumnArray = new byte[recordLength];
+            while (d_is.available() > 0) {
+                //fills entire header to array,then stores the array into the list
+                for (int i = 0; i < headerSize; i++) {
+                    d_is.read(headerColumnArray);
+                    headerColumn.add(headerColumnArray);
+                    // resets the array
+                    headerColumnArray = new byte[recordLength];
+                }
+                //skips to next header location
+                d_is.skipBytes(recordLength * bandSize);
             }
 
+            //starts data outputstream. closes the input stream and starts it back up to reset the stream position
+            DataOutputStream d_os = new DataOutputStream(new FileOutputStream(outputPath));
+            d_is.close();
+            d_is = new DataInputStream(new FileInputStream(inputFile));
 
-            //System.out.print("D"+headerFull.size()+"\n");
-            d_is.skipBytes(recordLength * bandSize);
-        }
+            //loops for as long as there is input
+            while (d_is.available() > 0) {
+                //loops however many columns the header contains
+                for (int i = 0; i < headerSize; i++) {
+                    //sets array to list at position i
+                    headerColumnArray = headerColumn.get(i);
+                    //for each line of the header, reads position of the default values
+                    //puts the value into a byte array
+                    byte[] sunBytes = ByteBuffer.allocate(recordLength).putInt(sun_values[i]).array();
+                    //start replacing from the start of the column, ends at the end of however long the allocated bytes of the value is
+                    int replaceStart = 0; // inclusive
+                    int replaceEnd = sunBytes.length; // exclusive
 
-
-        DataOutputStream d_os = new DataOutputStream(new FileOutputStream(outputPath));
-        d_is.close();
-        d_is = new DataInputStream(new FileInputStream(inputFile));
-
-
-        while (d_is.available() > 0) {
-
-
-            for (int i = 0; i < headerSize; i++) {
-                headerColumnArray = headerColumn.get(i);
-                byte[] sunBytes = ByteBuffer.allocate(recordLength).putInt(sun_values[i]).array();
-                int replaceStart = 0; // inclusive
-                int replaceEnd = sunBytes.length; // exclusive
-
-                byte[] toWrite = new byte[headerColumnArray.length - (replaceEnd - replaceStart) + sunBytes.length];
-                System.arraycopy(headerColumnArray, 0, toWrite, 0, replaceStart);
-                System.arraycopy(sunBytes, 0, toWrite, replaceStart, sunBytes.length);
-                System.arraycopy(headerColumnArray, replaceEnd, toWrite, replaceStart + sunBytes.length, headerColumnArray.length - replaceEnd);
-                d_os.write(toWrite);
-
+                    //creates a 3rd array to replace the allocated bytes with the empty bytes of the original header file
+                    byte[] toWrite = new byte[headerColumnArray.length - (replaceEnd - replaceStart) + sunBytes.length];
+                    //copies header array from position 0 to toWrite at position 0 for 0 length (saves all before the starting point of hte replace
+                    System.arraycopy(headerColumnArray, 0, toWrite, 0, replaceStart);
+                    //copies sunbytes from position 0 to toWrite at position 0 for the length of sunbytes.length (the repalcement part)
+                    System.arraycopy(sunBytes, 0, toWrite, replaceStart, sunBytes.length);
+                    //copies the array from headerColumnarray after the replacement part for however long is left (saves the rest of the unchanged part)
+                    System.arraycopy(headerColumnArray, replaceEnd, toWrite, replaceStart + sunBytes.length, headerColumnArray.length - replaceEnd);
+                    //writes the new array to an output file
+                    d_os.write(toWrite);
+                }
+                //creates new img array variable to save the actual image of the files
+                byte[] imgArray = new byte[recordLength * bandSize];
+                //skips the input stream to the image file
+                d_is.skipBytes(recordLength * headerSize);
+                //reads the entire image
+                d_is.read(imgArray);
+                //writes the same image to new file
+                d_os.write(imgArray);
             }
-            byte[] imgArray = new byte[recordLength * bandSize];
-            d_is.skipBytes(recordLength*headerSize);
-            d_is.read(imgArray);
-            d_os.write(imgArray);
+            //closes data input stream
+            d_is.close();
+            d_os.close();
+            txtWarning.setVisible(true);
+            txtWarning.setText("SUCCESS!");
 
+        } catch (NumberFormatException e) {
+            txtWarning.setVisible(true);
+            txtWarning.setText("FAILED!");
+            e.printStackTrace();
+
+        } catch (IOException e) {
+            txtWarning.setVisible(true);
+            txtWarning.setText("FAILED!");
+            e.printStackTrace();
         }
-        d_is.close();
-        d_os.close();
     }
 
 }
