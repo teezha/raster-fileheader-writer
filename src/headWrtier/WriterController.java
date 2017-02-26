@@ -45,7 +45,7 @@ public class WriterController implements Initializable {
     //At school
     //File homedir = new File("H:/var/gist/8100/mod1/");
     //At local
-    File homedir = new File(System.getProperty("user.home"));
+    File homedir = new File("D:\\Projects");
 
 
     public void OpenFile() {
@@ -91,69 +91,64 @@ public class WriterController implements Initializable {
         int sun_type = 0;              //type of file
         int sun_maptype = 0;       //type of colormap
         int sun_maplength = 0;   //colourmap length bytes)
-        int[] sun_values = new int[]{sun_magic, sun_rows,sun_cols,sun_depth,sun_length,sun_type,sun_maptype,sun_maplength};
+        int[] sun_values = new int[]{sun_magic, sun_rows, sun_cols, sun_depth, sun_length, sun_type, sun_maptype, sun_maplength};
 
         int headerNumber = 0;
-        ArrayList<ArrayList<byte[]>> headerFull = new ArrayList<ArrayList<byte[]>>();
         ArrayList<byte[]> headerColumn = new ArrayList<byte[]>();
 
 
-        byte[] headerColumnArray = new byte[recordLength];
-
         DataInputStream d_is = new DataInputStream(new FileInputStream(inputFile));
+
+        byte[] headerColumnArray = new byte[recordLength];
 
         while (d_is.available() > 0) {
             //fills entire header to array
-            headerColumn.clear();
+
+
+            //System.out.print("C"+headerColumn.size()+"\n");
             for (int i = 0; i < headerSize; i++) {
                 d_is.read(headerColumnArray);
                 headerColumn.add(headerColumnArray);
-                headerColumnArray = null;
-                d_is.skipBytes(recordLength * bandSize);
+                // System.out.print("A"+headerColumn.size()+"\n");
+                headerColumnArray = new byte[recordLength];
             }
-            headerFull.add(headerColumn);
-            headerNumber++;
+
+
+            //System.out.print("D"+headerFull.size()+"\n");
+            d_is.skipBytes(recordLength * bandSize);
         }
-        headerColumn.clear();
 
-
-        for (int i = 0; i < headerNumber;i++) {
-            headerColumn = headerFull.get(i);
-            for (int k =0; k < headerSize; k++)
-            {
-                byte[] sunBytes = ByteBuffer.allocate(recordLength).putInt(sun_values[k]).array();
-                int replaceEnd = sunBytes.length;
-                headerColumnArray = headerColumn.get(k);
-
-                byte[] toWrite = new byte[headerColumnArray.length-replaceEnd+sunBytes.length];
-
-                System.arraycopy(headerColumnArray,0,toWrite,0,0);
-                System.arraycopy(sunBytes,0,toWrite,0,sunBytes.length);
-                System.arraycopy(headerColumnArray,replaceEnd,toWrite,sunBytes.length, headerColumnArray.length-replaceEnd);
-
-                headerColumn.set(k, toWrite);
-
-            }
-            headerFull.set(i, headerColumn);
-        }
 
         DataOutputStream d_os = new DataOutputStream(new FileOutputStream(outputPath));
-        d_is.reset();
+        d_is.close();
+        d_is = new DataInputStream(new FileInputStream(inputFile));
 
 
         while (d_is.available() > 0) {
 
-            for (int i = 0; i < headerNumber; i++) {
-                headerColumn = headerFull.get(i);
-                for (int k =0; k < headerSize; k++)                {
+
+            for (int i = 0; i < headerSize; i++) {
+                headerColumnArray = headerColumn.get(i);
+                byte[] sunBytes = ByteBuffer.allocate(recordLength).putInt(sun_values[i]).array();
+                int replaceEnd = sunBytes.length;
 
 
-                }
+                byte[] toWrite = new byte[headerColumnArray.length - replaceEnd + sunBytes.length];
+
+                System.arraycopy(headerColumnArray, 0, toWrite, 0, 0);
+                System.arraycopy(sunBytes, 0, toWrite, 0, sunBytes.length);
+                System.arraycopy(headerColumnArray, replaceEnd, toWrite, sunBytes.length, headerColumnArray.length - replaceEnd);
+
+                d_os.write(toWrite);
+
             }
+            byte[] imgArray = new byte[recordLength * bandSize];
+            d_is.read(imgArray);
+            d_os.write(imgArray);
 
         }
-
-
+        d_is.close();
+        d_os.close();
     }
 
 }
