@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+
+
+<Pane fx:id="pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="headWrtier.WriterController">
+   <children>
+      <GridPane alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="369.0" prefWidth="600.0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="291.0" minWidth="15.0" prefWidth="15.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="291.0" minWidth="10.0" prefWidth="173.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="421.0" minWidth="10.0" prefWidth="421.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="421.0" minWidth="15.0" prefWidth="15.0" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="5.0" prefHeight="5.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="5.0" prefHeight="5.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="File Path" textAlignment="CENTER" wrappingWidth="70.1474609375" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Header Size (bytes)" wrappingWidth="191.884765625" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Band Size (bytes)" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Record Length (bytes)" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <TextField fx:id="tfRecLength" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <TextField fx:id="tfHeadLength" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+            <TextField fx:id="tfBandSize" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+            <HBox alignment="CENTER" prefHeight="64.0" prefWidth="364.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
+               <children>
+                  <TextField fx:id="tfPath" alignment="TOP_LEFT" nodeOrientation="LEFT_TO_RIGHT" prefHeight="31.0" prefWidth="354.0" promptText="Open IMG File..." />
+                  <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#OpenFile" prefHeight="31.0" prefWidth="112.0" text="Open..." />
+               </children>
+            </HBox>
+            <Text fx:id="txtWarning" fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="text" visible="false" wrappingWidth="159.6708984375" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <Button mnemonicParsing="false" onAction="#WriteFile" text="Write File" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="5" GridPane.valignment="CENTER" />
+         </children>
+      </GridPane>
+   </children>
+</Pane>
