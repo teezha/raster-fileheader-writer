@@ -130,19 +130,18 @@ public class WriterController implements Initializable {
             for (int i = 0; i < headerSize; i++) {
                 headerColumnArray = headerColumn.get(i);
                 byte[] sunBytes = ByteBuffer.allocate(recordLength).putInt(sun_values[i]).array();
-                int replaceEnd = sunBytes.length;
+                int replaceStart = 0; // inclusive
+                int replaceEnd = sunBytes.length; // exclusive
 
-
-                byte[] toWrite = new byte[headerColumnArray.length - replaceEnd + sunBytes.length];
-
-                System.arraycopy(headerColumnArray, 0, toWrite, 0, 0);
-                System.arraycopy(sunBytes, 0, toWrite, 0, sunBytes.length);
-                System.arraycopy(headerColumnArray, replaceEnd, toWrite, sunBytes.length, headerColumnArray.length - replaceEnd);
-
+                byte[] toWrite = new byte[headerColumnArray.length - (replaceEnd - replaceStart) + sunBytes.length];
+                System.arraycopy(headerColumnArray, 0, toWrite, 0, replaceStart);
+                System.arraycopy(sunBytes, 0, toWrite, replaceStart, sunBytes.length);
+                System.arraycopy(headerColumnArray, replaceEnd, toWrite, replaceStart + sunBytes.length, headerColumnArray.length - replaceEnd);
                 d_os.write(toWrite);
 
             }
             byte[] imgArray = new byte[recordLength * bandSize];
+            d_is.skipBytes(recordLength*headerSize);
             d_is.read(imgArray);
             d_os.write(imgArray);
 
