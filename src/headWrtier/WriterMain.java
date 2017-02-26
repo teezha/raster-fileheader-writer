@@ -1,5 +1,15 @@
 package headWrtier;
-
+/**
+ * ===================================================================================================================
+ * File: Header Writer
+ * Made by: Toby Zhang on Feb. 25, 2017
+ * <p>
+ * Purpose: Reads a given BSQ file, takes user input for sizes, outputs a new file with the header written
+ * Dependencies: none noted.
+ * <p>
+ * Limitations: input must be a valid BSQ image file, must know exact details of sizes.
+ * ====================================================================================================================
+ */
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
