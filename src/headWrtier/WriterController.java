@@ -171,42 +171,42 @@ public class WriterController implements Initializable {
             int imgCount = 0;
             //loops for as long as there is input -- REMOVED ONLY OUTPUT SPECIFIED IMAGE
             //while (d_is.available() > 0) {
-                //loops however many columns the header contains
-                /**
-                 for (int i = 0; i < headerSize; i++) {
-                 //sets array to list at position i
-                 headerColumnArray = headerColumn.get(i);
-                 //for each line of the header, reads position of the default values
-                 //puts the value into a byte array
-                 byte[] sunBytes = ByteBuffer.allocate(recordLength).putInt(sun_values[i]).array();
-                 //start replacing from the start of the column, ends at the end of however long the allocated bytes of the value is
-                 int replaceStart = 0; // inclusive
-                 int replaceEnd = sunBytes.length; // exclusive
+            //loops however many columns the header contains
+            /**
+             for (int i = 0; i < headerSize; i++) {
+             //sets array to list at position i
+             headerColumnArray = headerColumn.get(i);
+             //for each line of the header, reads position of the default values
+             //puts the value into a byte array
+             byte[] sunBytes = ByteBuffer.allocate(recordLength).putInt(sun_values[i]).array();
+             //start replacing from the start of the column, ends at the end of however long the allocated bytes of the value is
+             int replaceStart = 0; // inclusive
+             int replaceEnd = sunBytes.length; // exclusive
 
-                 //creates a 3rd array to replace the allocated bytes with the empty bytes of the original header file
-                 byte[] toWrite = new byte[headerColumnArray.length - (replaceEnd - replaceStart) + sunBytes.length];
-                 //copies header array from position 0 to toWrite at position 0 for 0 length (saves all before the starting point of hte replace
-                 System.arraycopy(headerColumnArray, 0, toWrite, 0, replaceStart);
-                 //copies sunbytes from position 0 to toWrite at position 0 for the length of sunbytes.length (the repalcement part)
-                 System.arraycopy(sunBytes, 0, toWrite, replaceStart, sunBytes.length);
-                 //copies the array from headerColumnarray after the replacement part for however long is left (saves the rest of the unchanged part)
-                 System.arraycopy(headerColumnArray, replaceEnd, toWrite, replaceStart + sunBytes.length, headerColumnArray.length - replaceEnd);
-                 //writes the new array to an output file
-                 d_os.write(toWrite);
-                 } */
-                //creates new img array variable to save the actual image of the files
-                byte[] imgArray = new byte[recordLength * bandSize];
+             //creates a 3rd array to replace the allocated bytes with the empty bytes of the original header file
+             byte[] toWrite = new byte[headerColumnArray.length - (replaceEnd - replaceStart) + sunBytes.length];
+             //copies header array from position 0 to toWrite at position 0 for 0 length (saves all before the starting point of hte replace
+             System.arraycopy(headerColumnArray, 0, toWrite, 0, replaceStart);
+             //copies sunbytes from position 0 to toWrite at position 0 for the length of sunbytes.length (the repalcement part)
+             System.arraycopy(sunBytes, 0, toWrite, replaceStart, sunBytes.length);
+             //copies the array from headerColumnarray after the replacement part for however long is left (saves the rest of the unchanged part)
+             System.arraycopy(headerColumnArray, replaceEnd, toWrite, replaceStart + sunBytes.length, headerColumnArray.length - replaceEnd);
+             //writes the new array to an output file
+             d_os.write(toWrite);
+             } */
+            //creates new img array variable to save the actual image of the files
+            byte[] imgArray = new byte[recordLength * bandSize];
 
-                //skips the input stream to the image file
-                for (int i = 0; i < sun_values.length; i++) {
-                    d_os.writeInt(sun_values[i]);
-                }
-                d_is.skipBytes((recordLength * (bandSize+headerSize) * (Integer.parseInt(String.valueOf(cbImgCount.getValue()))-1)+headerSize*recordLength));
-                System.out.print((recordLength * (bandSize+headerSize) + "\n" +(Integer.parseInt(String.valueOf(cbImgCount.getValue()))-1)+"\n"+headerSize*recordLength));
-                //reads the entire image
-                d_is.read(imgArray);
-                //writes the same image to new file
-                d_os.write(imgArray);
+            //skips the input stream to the image file
+            for (int i = 0; i < sun_values.length; i++) {
+                d_os.writeInt(sun_values[i]);
+            }
+            d_is.skipBytes((recordLength * (bandSize + headerSize) * (Integer.parseInt(String.valueOf(cbImgCount.getValue())) - 1) + headerSize * recordLength));
+            System.out.print((recordLength * (bandSize + headerSize) + "\n" + (Integer.parseInt(String.valueOf(cbImgCount.getValue())) - 1) + "\n" + headerSize * recordLength));
+            //reads the entire image
+            d_is.read(imgArray);
+            //writes the same image to new file
+            d_os.write(imgArray);
 
 
             //closes data input stream
