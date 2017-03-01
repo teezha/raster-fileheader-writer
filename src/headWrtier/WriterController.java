@@ -168,7 +168,7 @@ public class WriterController implements Initializable {
             //d_is.close();
             //d_is = new DataInputStream(new FileInputStream(inputFile));
 
-            int imgCount = 0;
+            //int imgCount = 0;
             //loops for as long as there is input -- REMOVED ONLY OUTPUT SPECIFIED IMAGE
             //while (d_is.available() > 0) {
             //loops however many columns the header contains
@@ -201,6 +201,7 @@ public class WriterController implements Initializable {
             for (int i = 0; i < sun_values.length; i++) {
                 d_os.writeInt(sun_values[i]);
             }
+            //skips i number of images plus the header size
             d_is.skipBytes((recordLength * (bandSize + headerSize) * (Integer.parseInt(String.valueOf(cbImgCount.getValue())) - 1) + headerSize * recordLength));
             System.out.print((recordLength * (bandSize + headerSize) + "\n" + (Integer.parseInt(String.valueOf(cbImgCount.getValue())) - 1) + "\n" + headerSize * recordLength));
             //reads the entire image
