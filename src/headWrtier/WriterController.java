@@ -8,6 +8,24 @@ package headWrtier;
  * Dependencies: none noted.
  * <p>
  * Limitations: input must be a valid BSQ image file, must know exact details of sizes.
+ * Psuedo Code
+ *
+ * function Header
+ * open file = chooseFile
+ * set path to chooseFile
+ * get user input variables
+ * while (header + image size) * recordLength is available
+ * image number++
+ * for each image number set into choice box
+ * on choice box select
+ *    set image number = choice number -1
+ * choose save path
+ * write header variables
+ * skip (header + image size) * recordLength * image number
+ * read image
+ * write image
+ * write output to save path
+ * END
  * ====================================================================================================================
  */
 
